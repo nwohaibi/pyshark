@@ -40,7 +40,26 @@ class Layer(object):
         # Note: we don't read lazily from the XML because the lxml objects are very memory-inefficient
         # so we'd rather not save them.
         for field in xml_obj.findall('.//field'):
-            self._all_fields[field.attrib['name']] = LayerField(**dict(field.attrib))
+            if field.attrib['name'] in self._all_fields:
+                temp_dict_of_attrs = dict(field.attrib)
+                if self._all_fields[field.attrib['name']].value is not None and "value" in temp_dict_of_attrs: 
+                    if temp_dict_of_attrs["value"]:
+                        self._all_fields[field.attrib['name']].value += temp_dict_of_attrs["value"]
+                if self._all_fields[field.attrib['name']].show is not None and "show" in temp_dict_of_attrs: 
+                    if temp_dict_of_attrs["show"]:
+                        if temp_dict_of_attrs["show"].find("[truncated]") == 0:
+                            temp_dict_of_attrs["show"] = temp_dict_of_attrs["show"][11:]
+                        self._all_fields[field.attrib['name']].show += temp_dict_of_attrs["show"]
+                if self._all_fields[field.attrib['name']].size is not None and "size" in temp_dict_of_attrs: 
+                    if temp_dict_of_attrs["size"]:
+                        self._all_fields[field.attrib['name']].size += temp_dict_of_attrs["size"]
+            else:
+                self._all_fields[field.attrib['name']] = LayerField(**dict(field.attrib))
+                if self._all_fields[field.attrib['name']].show:
+                    if self._all_fields[field.attrib['name']].show.find("[truncated]") == 0:
+                        self._all_fields[field.attrib['name']].show = self._all_fields[field.attrib['name']].show[11:]
+
+
 
     def __getattr__(self, item):
         val = self.get_field_value(item, raw=self.raw_mode)
