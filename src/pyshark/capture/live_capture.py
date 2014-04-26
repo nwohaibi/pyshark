@@ -98,7 +98,11 @@ class LiveCapture(Capture):
         """
         params = super(LiveCapture, self).get_parameters(packet_count=packet_count)
         if self.interface:
-            params += ['-i', self.interface]
+            if isinstance(self.interface , basestring):
+                params += ['-i', self.interface]
+            else:
+                for intrfce in self.interface:
+                    params += ['-i', intrfce]
         if self.bpf_filter:
             params += ['-f', self.bpf_filter]
         return params
