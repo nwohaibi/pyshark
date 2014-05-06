@@ -110,8 +110,7 @@ class Capture(object):
         Gets a new tshark process with the previously-set paramaters.
         """
         parameters = [get_tshark_path(), '-2', '-l', '-T', 'pdml'] + self.get_parameters(packet_count=packet_count) + extra_params
-        proc = subprocess.Popen(parameters,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(parameters,stdout=subprocess.PIPE)
         if proc.poll() is not None:
             raise TSharkCrashException('TShark seems to have crashed. Try updating it. (command ran: "%s")' % ' '.join(parameters))
         return proc
