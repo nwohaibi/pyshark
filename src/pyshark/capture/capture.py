@@ -86,18 +86,23 @@ class Capture(object):
 
         while True:
             # Read data until we get a packet, and yield it.
+            print "_packets_from_fd loop before read"
             new_data = fd.read(batch_size)
+            print "_packets_from_fd loop after read"
             data += new_data
             packet, data = cls._extract_packet_from_data(data)
 
             if packet:
+                print "_packets_from_fd loop if packet:"
                 packets_captured += 1
                 yield packet_from_xml_packet(packet)
 
             if not wait_for_more_data and len(new_data) < batch_size:
+                print "_packets_from_fd loop not wait_for_more_data and len(new_data) < batch_size"
                 break
 
             if packet_count and packets_captured >= packet_count:
+                print "_packets_from_fd loop packet_count and packets_captured >= packet_count"
                 break
 
     def _get_tshark_process(self, packet_count=None, extra_params=[]):
